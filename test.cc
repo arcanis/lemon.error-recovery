@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include <list>
 #include <string>
@@ -22,35 +23,41 @@ struct Ast
 
         std::cout << "- " << name << std::endl;
 
-        for ( auto child : children ) {
-            child->print( depth + 1 );
+        std::list< Ast * >::iterator it = children.begin( );
+        for ( ; it != children.end( ); ++ it ) {
+            ( * it )->print( depth + 1 );
         }
     }
 };
 
-static Ast * root = nullptr;
+static Ast * root = 0;
 
 #include "test.h"
 #include "test.c"
 
 int main( void )
 {
-    std::list< int > tokens {
-        If, Expr, If, Expr, Ok, Else, Ok
-    };
+    std::list< int > tokens;
+    tokens.push_back( If );
+    tokens.push_back( Expr );
+    tokens.push_back( If );
+    tokens.push_back( Expr );
+    tokens.push_back( Ok );
+    tokens.push_back( Else );
+    tokens.push_back( Ok );
 
     yyTraceFILE = fopen("test.out", "w");
-    auto pParser = ParseAlloc( malloc );
+    void * pParser = ParseAlloc( malloc );
 
     while ( ! tokens.empty( ) ) {
-        Parse( pParser, tokens.front( ), nullptr );
+        Parse( pParser, tokens.front( ), 0 );
         tokens.pop_front( );
     }
 
-    Parse( pParser, 0, nullptr );
+    Parse( pParser, 0, 0 );
     ParseFree( pParser, free );
 
-    if ( root == nullptr ) {
+    if ( root == 0 ) {
         std::cerr << "No result" << std::endl;
         return 1;
     } else {

@@ -2,15 +2,15 @@
 %left If Else.
 
 %syntax_error {
-    std::cout << "syn" << std::endl;
+    std::cout << "syntax error" << std::endl;
 }
 
 %parse_failure {
-    std::cout << "foo" << std::endl;
+    std::cout << "parse failure" << std::endl;
 }
 
 %parse_accept {
-    std::cout << "test" << std::endl;
+    std::cout << "parse accept" << std::endl;
 }
 
 program ::= stmt(U). { root = U; }
@@ -20,5 +20,5 @@ stmt(A) ::= ifstmt(U). { A = U; }
 stmt(A) ::= Ok. { A = new Ast( "Ok" ); }
 
 %type ifstmt { Ast * }
-ifstmt(A) ::= If Expr stmt(U) Else stmt(V). { A = new Ast( "if", { U, V } ); }
-ifstmt(A) ::= If Expr stmt(U). { A = new Ast( "if", { U } ); }
+ifstmt(A) ::= If Expr stmt(U) Else stmt(V). { A = new Ast( "if" ); A->children.push_back( U ); A->children.push_back( V ); }
+ifstmt(A) ::= If Expr stmt(U). { A = new Ast( "if" ); A->children.push_back( U ); }
