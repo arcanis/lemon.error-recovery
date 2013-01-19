@@ -1,0 +1,24 @@
+%include {#include <cassert>}
+%left If Else.
+
+%syntax_error {
+    std::cout << "syn" << std::endl;
+}
+
+%parse_failure {
+    std::cout << "foo" << std::endl;
+}
+
+%parse_accept {
+    std::cout << "test" << std::endl;
+}
+
+program ::= stmt(U). { root = U; }
+
+%type stmt { Ast * }
+stmt(A) ::= ifstmt(U). { A = U; }
+stmt(A) ::= Ok. { A = new Ast( "Ok" ); }
+
+%type ifstmt { Ast * }
+ifstmt(A) ::= If Expr stmt(U) Else stmt(V). { A = new Ast( "if", { U, V } ); }
+ifstmt(A) ::= If Expr stmt(U). { A = new Ast( "if", { U } ); }
